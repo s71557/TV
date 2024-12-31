@@ -152,17 +152,22 @@ async def get_delay_requests(url, timeout=config.sort_timeout, proxy=None):
         return int(round((end - start) * 1000)) if end else float("inf")
 
 
-def is_ffmpeg_installed():
+def check_ffmpeg_installed_status():
     """
     Check ffmpeg is installed
     """
+    status = False
     try:
         result = subprocess.run(
             ["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        return result.returncode == 0
+        status = result.returncode == 0
     except FileNotFoundError:
-        return False
+        status = False
+    except Exception as e:
+        print(e)
+    finally:
+        return status
 
 
 async def ffmpeg_url(url, timeout=config.sort_timeout):
@@ -296,6 +301,17 @@ async def get_speed(url, ipv6_proxy=None, filter_resolution=config.open_filter_r
             callback()
 
 
+def sort_urls_key(item):
+    """
+    Sort the urls with key
+    """
+    speed, resolution, origin = item["speed"], item["resolution"], item["origin"]
+    if origin == "whitelist":
+        return float("inf")
+    else:
+        return (speed if speed is not None else float("-inf")) + get_resolution_value(resolution)
+
+
 def sort_urls(name, data, supply=config.open_supply, filter_speed=config.open_filter_speed, min_speed=config.min_speed,
               filter_resolution=config.open_filter_resolution, min_resolution=config.min_resolution_value,
               logger=None):
@@ -338,15 +354,7 @@ def sort_urls(name, data, supply=config.open_supply, filter_speed=config.open_fi
                     result["speed"] = speed
                     result["resolution"] = resolution
                     filter_data.append(result)
-
-    def combined_key(item):
-        speed, resolution, origin = item["speed"], item["resolution"], item["origin"]
-        if origin == "whitelist":
-            return float("inf")
-        else:
-            return (speed if speed is not None else float("-inf")) + get_resolution_value(resolution)
-
-    filter_data.sort(key=combined_key, reverse=True)
+    filter_data.sort(key=sort_urls_key, reverse=True)
     return [
         (item["url"], item["date"], item["resolution"], item["origin"])
         for item in filter_data

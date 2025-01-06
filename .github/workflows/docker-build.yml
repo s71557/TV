@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Build 和 Push Docker Images
 
 on:
   workflow_dispatch:
@@ -22,23 +22,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Build 和 push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: guovern/iptv-api:latest
+          tags: s71557/iptv-api:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: |
             APP_WORKDIR=/iptv-api
             LITE=False
 
-      - name: Build and push Docker image (Lite)
+      - name: Build 和 push Docker image (Lite)
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: guovern/iptv-api:lite
+          tags: s71557/iptv-api:lite
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: |
             APP_WORKDIR=/iptv-api-lite

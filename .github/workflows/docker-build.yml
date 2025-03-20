@@ -2,7 +2,7 @@ name: Build and Push Docker Images
 
 on:
   workflow_dispatch:
-    branches:
+    分支:
       - master
 
 jobs:
@@ -34,8 +34,8 @@ jobs:
       #     context: .
       #     push: true
       #     tags: |
-      #       guovern/iptv-api:latest
-      #       guovern/iptv-api:${{ env.version }}
+      #       s71557/iptv-api:latest
+      #       s71557/iptv-api:${{ env.version }}
       #     platforms: linux/amd64,linux/arm64,linux/arm/v7
       #     build-args: |
       #       APP_WORKDIR=/iptv-api
@@ -47,7 +47,7 @@ jobs:
           context: .
           push: true
           tags: |
-            guovern/iptv-api:lite-test
+            s71557/iptv-api:lite-test
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: |
             APP_WORKDIR=/iptv-api-lite
